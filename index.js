@@ -9,27 +9,36 @@ const client = new Client({
     ] 
 });
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+// Yeni Google Gen AI SDK yapılandırması
+const ai = new GoogleGenAI({});
 
 client.once('ready', () => {
     console.log(`Bot ${client.user.tag} olarak giriş yaptı! 🤖`);
 });
 
 client.on('messageCreate', async message => {
+    // Botun kendi mesajlarını veya başka botları yoksay
     if (message.author.bot) return;
     
-    if (message.content.startsWith('!sor')) {
-        const prompt = message.content.slice(5);
-        try {
-            const response = await ai.models.generateContent({
-                model: 'gemini-1.5-flash',
-                contents: prompt,
-            });
-            message.reply(response.text);
-        } catch (error) {
-            console.error(error);
-            message.reply('Bir hata oluştu.');
+    // Sadece 'yapayzeka-ai' adlı kanaldaki mesajları dinle
+    if (message.channel.name !== 'yapayzeka-ai') return;
+
+    try {
+        // Kanalda yazılan metni doğrudan Gemini'a gönder
+        const response = await ai.models.generateContent({
+            model: 'gemini-2.5-flash',
+            contents: message.content,
+        });
+
+        // Gelen yanıtı Discord'a gönder
+        if (response && response.text) {
+            await message.reply(response.text);
+        } else {
+            await message.reply('Yapay zeka bir yanıt üretemedi.');
         }
+    } catch (error) {
+        console.error('Gemini API Hatası:', error);
+        await message.reply('Bir hata oluştu.');
     }
 });
 
