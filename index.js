@@ -1,41 +1,36 @@
+const { Client, GatewayIntentBits } = require('discord.js');
 const { GoogleGenAI } = require('@google/genai');
-const express = require('express');
 
-const app = express();
-const port = process.env.PORT || 3000;
+const client = new Client({ 
+    intents: [
+        GatewayIntentBits.Guilds, 
+        GatewayIntentBits.GuildMessages, 
+        GatewayIntentBits.MessageContent 
+    ] 
+});
 
-app.use(express.json());
-
-// Gemini API istemcisini başlatma (API anahtarını Render Environment Variables kısmından alacak)
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
-// Botun ana soru-cevap uç noktası (Endpoint)
-app.post('/ask', async (req, res) => {
-    try {
-        const userQuestion = req.body.question;
-        if (!userQuestion) {
-            return res.status(400).json({ error: 'Lütfen bir soru belirtin.' });
+client.once('ready', () => {
+    console.log(`Bot ${client.user.tag} olarak giriş yaptı! 🤖`);
+});
+
+client.on('messageCreate', async message => {
+    if (message.author.bot) return;
+    
+    if (message.content.startsWith('!sor')) {
+        const prompt = message.content.slice(5);
+        try {
+            const response = await ai.models.generateContent({
+                model: 'gemini-1.5-flash',
+                contents: prompt,
+            });
+            message.reply(response.text);
+        } catch (error) {
+            console.error(error);
+            message.reply('Bir hata oluştu.');
         }
-
-        // Gemini modelini çağırarak oyuncunun sorusuna yanıt üretme
-        const response = await ai.models.generateContent({
-            model: 'gemini-2.5-flash',
-            contents: userQuestion,
-        });
-
-        res.json({ answer: response.text });
-    } catch (error) {
-        console.error('Hata oluştu:', error);
-        res.status(500).json({ error: 'Yapay zeka yanıt üretirken bir hata oluştu.' });
     }
 });
 
-// Render'ın ayakta tutması için basit bir ana sayfa kontrolü
-app.get('/', (req, res) => {
-    sendResponse = 'Cubixora Yapay Zeka Botu aktif ve çalışıyor!';
-    res.send(sendResponse);
-});
-
-app.listen(port, () => {
-    console.log(`Sunucu ${port} portunda çalışıyor.`);
-});
+client.login(process.env.DISCORD_TOKEN);
