@@ -1,0 +1,14 @@
+{
+  "name": "cubixora-bot",
+  "version": "1.0.0",
+  "description": "Cubixora SMP Yapay Zeka Botu",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "@google/genai": "^0.1.1",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2"
+  }
+}
