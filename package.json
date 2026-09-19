@@ -1,14 +1,13 @@
 {
   "name": "cubixora-bot",
   "version": "1.0.0",
-  "description": "Cubixora SMP Yapay Zeka Botu",
+  "description": "Discord Yapay Zeka Botu",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
   },
   "dependencies": {
-    "@google/genai": "latest",
-    "dotenv": "latest",
-    "express": "latest"
+    "discord.js": "latest",
+    "@google/genai": "latest"
   }
 }
