@@ -9,7 +9,7 @@ const client = new Client({
     ] 
 });
 
-// Eski SDK yerine kararlı GoogleGenerativeAI başlatması
+// Gemini API anahtarını güvenli bir şekilde başlatıyoruz
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 let aktifKanalId = null;
 
@@ -53,9 +53,12 @@ client.on('interactionCreate', async interaction => {
 
 client.on('messageCreate', async message => {
     if (message.author.bot) return;
+    
+    // Eğer kanal seçilmediyse veya mesaj farklı kanaldan geldiyse yoksay
     if (!aktifKanalId || message.channel.id !== aktifKanalId) return;
 
     try {
+        // En kararlı çalışan Gemini modeli
         const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
         const result = await model.generateContent(message.content);
         const response = await result.response;
@@ -68,7 +71,7 @@ client.on('messageCreate', async message => {
         }
     } catch (error) {
         console.error('Gemini API Hatası:', error);
-        await message.reply('Bir hata oluştu.');
+        await message.reply('Yapay zeka yanıt verirken bir hata oluştu.');
     }
 });
 
