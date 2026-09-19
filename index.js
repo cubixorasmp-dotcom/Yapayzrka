@@ -1,6 +1,9 @@
 const { Client, GatewayIntentBits, REST, Routes, SlashCommandBuilder } = require('discord.js');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 
+// API anahtarın doğrudan buraya tanımlandı
+const genAI = new GoogleGenerativeAI("AQ.Ab8RN6KhZGUsh8NCbGIVvs0J14tI1eQcPMfGITBhqTwvyaUFng");
+
 const client = new Client({ 
     intents: [
         GatewayIntentBits.Guilds, 
@@ -9,8 +12,6 @@ const client = new Client({
     ] 
 });
 
-// Gemini API anahtarını güvenli bir şekilde başlatıyoruz
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 let aktifKanalId = null;
 
 client.once('ready', async () => {
@@ -53,12 +54,9 @@ client.on('interactionCreate', async interaction => {
 
 client.on('messageCreate', async message => {
     if (message.author.bot) return;
-    
-    // Eğer kanal seçilmediyse veya mesaj farklı kanaldan geldiyse yoksay
     if (!aktifKanalId || message.channel.id !== aktifKanalId) return;
 
     try {
-        // En kararlı çalışan Gemini modeli
         const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
         const result = await model.generateContent(message.content);
         const response = await result.response;
