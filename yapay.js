@@ -1,5 +1,6 @@
 import { Client, GatewayIntentBits, REST, Routes, SlashCommandBuilder, ChannelType } from "discord.js";
 import { GoogleGenAI } from "@google/genai";
+import { createServer } from "node:http";
 
 const DISCORD_TOKEN = process.env.DISCORD_TOKEN;
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
@@ -96,5 +97,21 @@ client.on("messageCreate", async message => {
     await message.reply("Yapay zeka cevap verirken bir hata oluştu. Render ortam değişkenlerini ve Gemini modelini kontrol et.");
   }
 });
+
+if (process.env.PORT) {
+  const server = createServer((request, response) => {
+    if (request.url === "/health") {
+      response.writeHead(200, { "Content-Type": "application/json" });
+      response.end(JSON.stringify({ status: "ok", bot: client.isReady() }));
+      return;
+    }
+    response.writeHead(200, { "Content-Type": "text/plain; charset=utf-8" });
+    response.end("Yapay bot aktif");
+  });
+
+  server.listen(process.env.PORT, "0.0.0.0", () => {
+    console.log("Health server " + process.env.PORT + " portunda çalışıyor.");
+  });
+}
 
 client.login(DISCORD_TOKEN);
