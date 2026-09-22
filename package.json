@@ -1,13 +1,17 @@
 {
-  "name": "cubixora-bot",
+  "name": "yapayzrka",
   "version": "1.0.0",
-  "description": "Discord Yapay Zeka Botu",
-  "main": "index.js",
+  "description": "Discord Gemini 3.6 Flash yapay zeka botu",
+  "type": "module",
+  "main": "yapay.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node yapay.js"
+  },
+  "engines": {
+    "node": ">=20"
   },
   "dependencies": {
-    "@google/generative-ai": "^0.21.0",
-    "discord.js": "^14.14.1"
+    "@google/genai": "^1.0.0",
+    "discord.js": "^14.21.0"
   }
 }
