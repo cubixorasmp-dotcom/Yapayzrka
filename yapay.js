@@ -43,12 +43,14 @@ async function komutuKaydet() {
 
 function parcalaraAyir(text, limit = 2000) {
   const parcalar = [];
-  for (let i = 0; i < text.length; i += limit) parcalar.push(text.slice(i, i + limit));
+  for (let i = 0; i < text.length; i += limit) {
+    parcalar.push(text.slice(i, i + limit));
+  }
   return parcalar;
 }
 
 client.once("ready", async () => {
-  console.log([96m`${client.user.tag} olarak giriş yapıldı.`[0m);
+  console.log(client.user.tag + " olarak giriş yapıldı.");
   try {
     await komutuKaydet();
   } catch (error) {
@@ -63,7 +65,7 @@ client.on("interactionCreate", async interaction => {
   aktifKanallar.set(interaction.guildId, kanal.id);
 
   await interaction.reply({
-    content: `✅ Yapay zeka kanalı ${kanal} olarak seçildi. Artık sorularına burada cevap vereceğim.`,
+    content: "✅ Yapay zeka kanalı " + kanal.toString() + " olarak seçildi. Artık sorularına burada cevap vereceğim.",
     ephemeral: false
   });
 });
